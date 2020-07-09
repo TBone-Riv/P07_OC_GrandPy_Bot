@@ -1,0 +1,6 @@
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Grampy répond à ta question sur '{location}' :</legend>
+        <div class="form-group">
+            <p>{bot_answer}</p>
+        </div>
+    </fieldset>
