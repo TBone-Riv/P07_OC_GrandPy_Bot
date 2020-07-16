@@ -1,60 +1,66 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="content-section">
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Pose ta question à Grampy</legend>
+<div class="col-md-8">
+    <div class="content-section">
+        <form id="my-form" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Pose ta question à Grampy</legend>
+                <div id="search" class="form-group">
+                    <p>
+                        Tape ta question et Grumpy te donnera un anecdote sur le lieu
+                    </p>
+                    {{ form.user_question(class="form-control form-control-lg") }}
+
+                </div>
+            </fieldset>
             <div class="form-group">
-                <p>
-                    Tape ta question et Grumpy te donnera un anecdote sur le lieu
-                </p>
-                <input type="text" class="form-control" id="user_input">
-                <button class="ntn btn-primary" onclick="search_answer();">Histoir</button>
+                {{ form.submit(class="btn btn-outline-info") }}
             </div>
-        </fieldset>
+        </form>
+    </div>
+</div>
+<div class="col-md-4" id="story-block">
+    <div class="content-section">
+        <h2 class="border-bottom mb-4" id="story-title"></h2>
+        <div class="form-group">
+            <p id="story"></p>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
 
-    function search_answer() {
 
-        var user_input = document.getElementById("user_input");
+    $(function() {
 
-        var entry = {
-            user_input: user_input.value
-        };
+        $("#story-block").hide()
 
-        fetch(`${window.origin}/answer`, {
-                method: "POST",
-                credentials: "include",
-                body: JSON.stringify(entry),
-                cache: "no-cache",
-                headers: new Headers({
-                          "content-type": "application/json"
-                })
-        })
-        .then(function(response) {
-                if (response.status !== 200) {
-                    console.log(`Looks like there was a problem. Status code: ${response.status}`);
-                    return;
+        $("#my-form").submit( function(event){
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/answer",
+                data: JSON.stringify({"user_input": $("#user_question").val()}),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(response) {
+                    $("#story-title").html("Grampy répond à ta question sur '" + response.location + "' :");
+                    $("#story").html(response.bot_answer);
+                    $("#story-block").slideDown(1000);
+                },
+                error: function() {
+                    alert('request error');
                 }
-                response.json().then(function(data) {
-                    renderHTML(data);
-                });
-        })
-        .catch(function(error) {
-            console.log("Fetch error: " + error);
+
+            });
+
         });
+    });
 
-    };
-
-
-    function renderHTML(data) {
-        var htmlString = data['answer']
-        document.getElementById('story').innerHTML = htmlString;
-        };
 
 </script>
 
 {% endblock %}
+
