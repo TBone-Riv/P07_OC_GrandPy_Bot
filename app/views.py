@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
+import app.models as models
+
 app = Flask(__name__)
 
 app.config.from_object('config')
@@ -23,7 +25,7 @@ def index():
 @app.route('/answer', methods=['POST', 'GET'])
 def answer():
     question = request.json['user_input']
-    # bot_answer = {"location":models.question.get_parsant, "bot_answer": models.question.answer}
-    bot_answer = {"location": question, "bot_answer": question}
+    question = models.Question(question)
+    bot_answer = {"location": question.parse(), "bot_answer": question.answer()}
     res = make_response(jsonify(bot_answer), 200)
     return res
