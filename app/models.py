@@ -111,16 +111,6 @@ class Question:
 
         content = "<p>" + content.replace("\n", "</p><p>") + "</p>"
 
-
-        print("\n")
-        print(list_wiki)
-        print("\n")
-        print(data)
-        print("\n")
-        print(search, content, url)
-        print("\n")
-
-
         return search, content, url
 
     def answer(self):
