@@ -8,7 +8,7 @@
                 <legend class="border-bottom mb-4">Pose ta question à Grampy</legend>
                 <div id="search" class="form-group">
                     <p>
-                        Tape ta question et Grumpy te donnera un anecdote sur le lieu
+                        Tape ta question et Grumpy te donnera une anecdote sur le lieu
                     </p>
                     {{ form.user_question(class="form-control form-control-lg") }}
 
@@ -20,14 +20,18 @@
         </form>
     </div>
 </div>
-<div class="col-md-4" id="story-block">
+<div class="col-md-4" id="info-block">
     <div class="content-section">
-        <h2 class="border-bottom mb-4" id="story-title"></h2>
-        <div class="form-group">
-            <p id="story"></p>
+        <h2 class="border-bottom mb-4" id="info-title"></h2>
+        <div id="info" class="form-group">
         </div>
     </div>
 </div>
+
+<div class="border-bottom md-8" id="content-block">
+
+</div>
+<div id="map"></div>
 {% endblock %}
 
 {% block script %}
@@ -36,9 +40,12 @@
 
     $(function() {
 
-        $("#story-block").hide()
+        $("#info-block").hide();
+        $("#content-block").hide();
 
         $("#my-form").submit( function(event){
+            $("#info-block").hide();
+            $("#content-block").hide();
             event.preventDefault();
             $.ajax({
                 type: "POST",
@@ -46,9 +53,18 @@
                 data: JSON.stringify({"user_input": $("#user_question").val()}),
                 contentType: 'application/json;charset=UTF-8',
                 success: function(response) {
-                    $("#story-title").html("Grampy répond à ta question sur '" + response.location + "' :");
-                    $("#story").html(response.bot_answer);
-                    $("#story-block").slideDown(1000);
+
+                    var map = new google.maps.Map(
+                    document.getElementById('map'), {zoom: 12, center: response.geometry});
+                    var marker = new google.maps.Marker(
+                    {position: response.geometry, map: map});
+
+                    $("#info-title").html(response.title);
+                    $("#info").html(response.info);
+                    $("#info-block").slideDown(1000);
+
+                    $("#content-block").html(response.content);
+                    $("#content-block").slideDown(1000)
                 },
                 error: function() {
                     alert('request error');
@@ -57,10 +73,17 @@
             });
 
         });
+
     });
+    function initMap() {
+        var geometry = {lat: 0, lng: 0};
+        var map = new google.maps.Map(
+            document.getElementById('map'), {zoom: 4, center: geometry});
+        var marker = new google.maps.Marker({position: geometry, map: map});
+    }
 
 
 </script>
-
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCN4Pi34z9JNZcfPVjwoOfJsKUdVLy8nI&callback=initMap"></script>
 {% endblock %}
 
