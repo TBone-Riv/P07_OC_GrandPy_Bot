@@ -1,7 +1,7 @@
 import pytest
 from unittest import mock
 import app.models as models
-from test_config import parse_sample, address_sample,\
+from app.tests.config import parse_sample, address_sample,\
     parse_address, info_sample
 
 
