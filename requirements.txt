@@ -5,4 +5,4 @@ gunicorn==20.0.4
 heroku==0.1.4
 ipdb==0.13.3
 pytest==5.4.3
-requests==2.24.0
+requests==2.31.0
